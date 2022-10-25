@@ -1,19 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome'
 
-export default function HomeScreen({ navigation }) {
-
-    const newItemPressHandler = () => {
-        navigation.navigate('Add Item');
-    }
-
+// export const NewItem = ({navigation}) => {
+export default function NewItem() {
     return (
         <View style={styles.body}>
-            <Text>BucketList</Text>
-            <TouchableOpacity style={styles.button} onPress={newItemPressHandler}>
-                <Icon name="plus" size={20} color={'#eef5db'}></Icon>
-            </TouchableOpacity>
+            <Text>New Item page</Text>
         </View>
     )
 }
@@ -44,4 +36,4 @@ const styles = StyleSheet.create({
 
 })
 
-// export default HomeScreen
+// export default NewItem
