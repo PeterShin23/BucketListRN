@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, View, TouchableOpacity, Pressable } from 'react-native';
+import { StyleSheet, Text, TextInput, View, TouchableOpacity, Pressable, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { convertDateToYYYYMMDD } from '../utils/dateConverter';
 import DatePicker from 'react-native-date-picker';
 
 export default function NewItem() {
@@ -7,11 +9,25 @@ export default function NewItem() {
     const [date, setDate] = useState(new Date())
     const [open, setOpen] = useState(false)
     const [dateText, setText] = useState('Select Due Date')
+    const [itemName, setItem] = useState('')
+
+    const onSavePressHandler = () => {
+        if (itemName == '' || dateText == 'Select Due Date') {
+            Alert.alert('Check Fields', 'Set an item and a due date!')
+        } else {
+            let dateForDb = convertDateToYYYYMMDD(dateText)
+            Alert.alert(itemName, dateForDb)
+        }
+    }
 
     return (
         <View style={styles.body}>
-            <TextInput style={styles.input} placeholder="Bucket Item"></TextInput>
-            {/* <Button title="Due Date" onPress={() => setOpen(true)} /> */}
+            <TextInput 
+                style={styles.input} 
+                placeholder="Bucket Item"
+                value={itemName}
+                onChangeText={(value) => setItem(value)}    
+            ></TextInput>
             <Pressable onPress={() => setOpen(true)}>
                 <Text style={styles.text}>{dateText}</Text>
             </Pressable>
@@ -27,7 +43,7 @@ export default function NewItem() {
                     setOpen(false)
                 }}
             ></DatePicker>
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity style={styles.button} onPress={() => onSavePressHandler()}>
                 <Text style={styles.buttonText}>Save</Text>
             </TouchableOpacity>
         </View>
