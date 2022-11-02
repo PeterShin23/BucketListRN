@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TextInput, View, TouchableOpacity, Pressable, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { convertDateToYYYYMMDD, convertDateToDisplay } from '../utils/dateConverter';
+import { convertDateToYYYYMMDD, convertDateToDisplay, convertCompletedDateToDisplay } from '../utils/dateConverter';
 import DatePicker from 'react-native-date-picker';
 
 export default function EditItem({route, navigation}) {
@@ -16,7 +16,7 @@ export default function EditItem({route, navigation}) {
     const [open, setOpen] = useState(false)
     const [itemName, setItemName] = useState(item.name)
     const [dueDateText, setDueDateText] = useState(convertDateToDisplay(item.dueDate)) 
-    const [completedDateText, setCompletedDateText] = useState('Not Finished Yet!')
+    const [completedDateText, setCompletedDateText] = useState(convertCompletedDateToDisplay(item.completed, item.completedDate))
 
     const onUpdatePressHandler = async () => {
         if (itemName == '' || dueDateText == 'Select Due Date') {
@@ -31,7 +31,8 @@ export default function EditItem({route, navigation}) {
                 completed: storedCompleted,
                 completedDate: storedCompletedDate,
             }
-
+            console.log(storedCompleted)
+            console.log(storedCompletedDate)
             const items = await AsyncStorage.getItem('bucketItems')
             let toUpdateItems;
             if (items !== null) {
