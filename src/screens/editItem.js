@@ -54,6 +54,23 @@ export default function EditItem({route, navigation}) {
         }
     }
 
+    const onDeletePressHandler = async () => {
+        
+        const items = await AsyncStorage.getItem('bucketItems')
+        let toDeleteItems;
+        if (items !== null) {
+            toDeleteItems = JSON.parse(items)
+            toDeleteItems = toDeleteItems.filter(item => item.id != storedId)
+        }
+        await AsyncStorage.setItem('bucketItems', JSON.stringify(toDeleteItems))
+
+        // test
+        // const inStorage = await AsyncStorage.getItem('bucketItems')
+        // console.log(inStorage)
+
+        navigation.navigate('My Bucket List')
+    }
+
     return (
 
         <View style={styles.body}>
@@ -61,6 +78,7 @@ export default function EditItem({route, navigation}) {
                 style={styles.input} 
                 placeholder="Bucket Item"
                 value={itemName}
+                multiline={true}
                 onChangeText={(value) => setItemName(value)}    
             ></TextInput>
             <Pressable onPress={() => setOpen(true)}>
@@ -79,8 +97,11 @@ export default function EditItem({route, navigation}) {
                 }}
             ></DatePicker>
             <Text style={styles.text}>{completedDateText}</Text>
-            <TouchableOpacity style={styles.button} onPress={() => onUpdatePressHandler()}>
+            <TouchableOpacity style={styles.updateButton} onPress={() => onUpdatePressHandler()}>
                 <Text style={styles.buttonText}>Update</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.deleteButton} onPress={() => onDeletePressHandler()}>
+                <Text style={styles.buttonText}>Delete</Text>
             </TouchableOpacity>
         </View>
     )
@@ -110,7 +131,7 @@ const styles = StyleSheet.create({
         margin: 10,
         paddingHorizontal: 10,
     },
-    button: {
+    updateButton: {
         width: 90,
         height: 40,
         borderRadius: 10,
@@ -119,6 +140,19 @@ const styles = StyleSheet.create({
         alignItems: 'center', 
         position: 'absolute',
         bottom: 40,
+        left: 80,
+        elevation: 5,
+    },
+    deleteButton: {
+        width: 90,
+        height: 40,
+        borderRadius: 10,
+        backgroundColor: '#4f6367',
+        justifyContent: 'center',
+        alignItems: 'center', 
+        position: 'absolute',
+        bottom: 40,
+        right: 80,
         elevation: 5,
     },
     buttonText: {

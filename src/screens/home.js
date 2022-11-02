@@ -22,20 +22,24 @@ export default function HomeScreen({ navigation }) {
 
     // prepopulate data
     const initialItems = [
-        {id:'1', name: "finish this bucket item", dueDate: "20220128", completed: false, completedDate: ""},
-        {id:'2', name: "finished item!", dueDate: "20221028", completed: true, completedDate: ""},
+        {id:'1', name: "these", dueDate: "20220128", completed: false, completedDate: ""},
+        {id:'2', name: "are", dueDate: "20221028", completed: true, completedDate: "20221027"},
+        {id:'3', name: "examples", dueDate: "20221028", completed: true, completedDate: "20221028"},
     ]
 
     // set data
-    const [bucketItems, setBucketItems] = useState(initialItems)
+    const [bucketItems, setBucketItems] = useState([])
     const loadItems = async () => {
         try {
             const data = await AsyncStorage.getItem('bucketItems')
             if (data !== null) {
                 setBucketItems(JSON.parse(data))
+            } else {
+                setBucketItems(initialItems)
+                await AsyncStorage.setItem('bucketItems', JSON.stringify(initialItems))
             }
         } catch (error) {
-            Alert.alert("Could not load items")
+            console.log("data is null")
         }
     }
 
@@ -131,7 +135,7 @@ export default function HomeScreen({ navigation }) {
                 <FlatList
                     showsVerticalScrollingIndicator={true}
                     contentContainerStyle={{padding:20, paddingBottom:100}}
-                    data={bucketItems.sort((a,b) => a.completed-b.completed || a.dueDate.localeCompare(b.dueDate) || a.completedDate.localeCompare(b.completedDate))}
+                    data={bucketItems.sort((a,b) => a.completed-b.completed || a.completedDate.localeCompare(b.completedDate) || a.dueDate.localeCompare(b.dueDate))}
                     keyExtractor={(item) => item.id.toString()} 
                     renderItem={({item}) => 
                         <TouchableOpacity onPress={() => editItemPressHandler(item)}>

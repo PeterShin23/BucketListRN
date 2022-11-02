@@ -4,7 +4,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { convertDateToYYYYMMDD } from '../utils/dateConverter';
 import uid from '../utils/uid'
 import DatePicker from 'react-native-date-picker';
-// import { useBucketItems } from '../utils/bucketItemProvider';
 
 export default function NewItem({navigation}) {
 
@@ -12,7 +11,6 @@ export default function NewItem({navigation}) {
     const [open, setOpen] = useState(false)
     const [itemName, setItemName] = useState('')
     const [dateText, setText] = useState('Select Due Date') 
-    // const {bucketItems, setBucketItems} = useBucketItems()
 
     const onSavePressHandler = async () => {
         if (itemName == '' || dateText == 'Select Due Date') {
@@ -36,33 +34,13 @@ export default function NewItem({navigation}) {
             } else {
                 updatedItems = [newItem]
             }
-            // setBucketItems(updatedItems)
             await AsyncStorage.setItem('bucketItems', JSON.stringify(updatedItems))
-
+            
             // test
             // const inStorage = await AsyncStorage.getItem('bucketItems')
             // console.log(inStorage)
 
             navigation.navigate('My Bucket List')
-
-            // try {
-            //     var bucketItem = {
-            //         'id': uid(),
-            //         'name': itemName,
-            //         'dueDate': dateForStorage,
-            //         'completed': false,
-            //         'completedDate': '',
-            //     }
-            //     await AsyncStorage.setItem('bucketItems', JSON.stringify(bucketItem))
-
-            //     // test
-            //     // const inStorage = await AsyncStorage.getItem(bucketItem.id)
-            //     // console.log(inStorage)
-
-            //     navigation.navigate('My Bucket List')
-            // } catch (error) {
-            //     Alert.alert("Error", "Failed to Make Bucket Item")
-            // }
         }
     }
 
