@@ -2,21 +2,67 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, View, TouchableOpacity, Pressable, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { convertDateToYYYYMMDD } from '../utils/dateConverter';
+import uid from '../utils/uid'
 import DatePicker from 'react-native-date-picker';
+// import { useBucketItems } from '../utils/bucketItemProvider';
 
-export default function NewItem() {
+export default function NewItem({navigation}) {
 
     const [date, setDate] = useState(new Date())
     const [open, setOpen] = useState(false)
-    const [dateText, setText] = useState('Select Due Date')
-    const [itemName, setItem] = useState('')
+    const [itemName, setItemName] = useState('')
+    const [dateText, setText] = useState('Select Due Date') 
+    // const {bucketItems, setBucketItems} = useBucketItems()
 
-    const onSavePressHandler = () => {
+    const onSavePressHandler = async () => {
         if (itemName == '' || dateText == 'Select Due Date') {
-            Alert.alert('Check Fields', 'Set an item and a due date!')
+            Alert.alert('Oops!', 'Set an item and a due date')
         } else {
-            let dateForDb = convertDateToYYYYMMDD(dateText)
-            Alert.alert(itemName, dateForDb)
+            let dateForStorage = convertDateToYYYYMMDD(dateText)
+
+            var newItem = {
+                id: uid(),
+                name: itemName,
+                dueDate: dateForStorage,
+                completed: false,
+                completedDate: '',
+            }
+
+            const items = await AsyncStorage.getItem('bucketItems')
+            let updatedItems;
+            if (items !== null) {
+                updatedItems = JSON.parse(items)
+                updatedItems.push(newItem)
+            } else {
+                updatedItems = [newItem]
+            }
+            // setBucketItems(updatedItems)
+            await AsyncStorage.setItem('bucketItems', JSON.stringify(updatedItems))
+
+            // test
+            // const inStorage = await AsyncStorage.getItem('bucketItems')
+            // console.log(inStorage)
+
+            navigation.navigate('My Bucket List')
+
+            // try {
+            //     var bucketItem = {
+            //         'id': uid(),
+            //         'name': itemName,
+            //         'dueDate': dateForStorage,
+            //         'completed': false,
+            //         'completedDate': '',
+            //     }
+            //     await AsyncStorage.setItem('bucketItems', JSON.stringify(bucketItem))
+
+            //     // test
+            //     // const inStorage = await AsyncStorage.getItem(bucketItem.id)
+            //     // console.log(inStorage)
+
+            //     navigation.navigate('My Bucket List')
+            // } catch (error) {
+            //     Alert.alert("Error", "Failed to Make Bucket Item")
+            // }
         }
     }
 
@@ -26,7 +72,7 @@ export default function NewItem() {
                 style={styles.input} 
                 placeholder="Bucket Item"
                 value={itemName}
-                onChangeText={(value) => setItem(value)}    
+                onChangeText={(value) => setItemName(value)}    
             ></TextInput>
             <Pressable onPress={() => setOpen(true)}>
                 <Text style={styles.text}>{dateText}</Text>

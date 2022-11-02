@@ -1,18 +1,49 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import { 
 StyleSheet, 
 Text, 
 TouchableOpacity, 
 View,
+ScrollView,
 FlatList,
 Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
-import CheckBox from '@react-native-community/checkbox'
+// import CheckBox from '@react-native-community/checkbox'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {convertDateToMMDDYYYY} from '../utils/dateConverter';
+import { useIsFocused } from '@react-navigation/native';
+// import { useBucketItems } from '../utils/bucketItemProvider';
 
 export default function HomeScreen({ navigation }) {
+
+    // if on this screen need to refresh basically
+    const isFocused = useIsFocused()
+
+    // prepopulate data
+    const initialItems = [
+        {id:'1', name: "finish this bucket item", dueDate: "20220128", completed: false, completedDate: ""},
+        {id:'2', name: "finished item!", dueDate: "20221028", completed: true, completedDate: ""},
+    ]
+
+    // set data
+    const [bucketItems, setBucketItems] = useState(initialItems)
+    const loadItems = async () => {
+        try {
+            const data = await AsyncStorage.getItem('bucketItems')
+            if (data !== null) {
+                setBucketItems(JSON.parse(data))
+            }
+            console.log("this is the storage: " + data)
+        } catch (error) {
+            Alert.alert("Could not load items")
+        }
+    }
+
+    useEffect(() => {
+        loadItems();
+    }, [isFocused]);
+
 
     // button handler to create item
     const newItemPressHandler = () => {
@@ -20,26 +51,20 @@ export default function HomeScreen({ navigation }) {
     }
 
     // item handler to edit item
-    const editItemPressHandler = (id) => {
-        navigation.navigate('Edit Item')
+    const editItemPressHandler = (item) => {
+        navigation.navigate('Edit Item', {item})
     }
 
     // for checkboxes
-    const markItem = itemId => {
+    const markItem = (itemId) => {
         const newItem = bucketItems.map(item => {
-          if (item.id == itemId) {
-            return {...item, completed: !item.completed};
-          }
-          return item;
+            if (item.id == itemId) {
+                return {...item, completed: !item.completed};
+            }
+            return item;
         });
-        setItems(newItem);
+        setBucketItems(newItem);
       };
-
-    // "pre-populating" db
-    const [bucketItems, setItems] = useState([
-        {id:1, name: "first", dueDate: "20220128", completed: false, completedDate: ""},
-        {id:2, name: "second", dueDate: "20221028", completed: true, completedDate: ""},
-    ])
 
     // return list of items in FlatList style
     const ListItem = ({item}) => {
@@ -65,31 +90,32 @@ export default function HomeScreen({ navigation }) {
             </View>
             <View>
                 <Text style={styles.text}>
-                    {/* {item?.dueDate} */}
                     {convertDateToMMDDYYYY(item?.dueDate)}
                 </Text>
             </View>
         </View>
-        )    
+        );    
     }
+    
+        return (
+            <View style={styles.body}>
+                <FlatList
+                    showsVerticalScrollingIndicator={true}
+                    contentContainerStyle={{padding:20, paddingBottom:100}}
+                    data={bucketItems.sort((a,b) => a.completed-b.completed || a.dueDate.localeCompare(b.dueDate) || a.completedDate.localeCompare(b.completedDate))}
+                    keyExtractor={(item) => item.id.toString()} 
+                    renderItem={({item}) => 
+                        <TouchableOpacity onPress={() => editItemPressHandler(item)}>
+                            <ListItem item={item} />
+                        </TouchableOpacity>
+                    }
+                />
+                <TouchableOpacity style={styles.addButton} onPress={newItemPressHandler}>
+                    <Icon name="plus" size={20} color={'#eef5db'}></Icon>
+                </TouchableOpacity>
+            </View>
+        )
 
-    return (
-        <View style={styles.body}>
-            <FlatList
-                showsVerticalScrollingIndicator={true}
-                contentContainerStyle={{padding:20, paddingBottom:100}}
-                data={bucketItems.sort((a,b) => a.completed-b.completed || a.dueDate.localeCompare(b.dueDate) || a.completedDate.localeCompare(b.completedDate))}
-                keyExtractor={(item) => item.id.toString()} 
-                renderItem={({item}) => 
-                    <TouchableOpacity onPress={() => editItemPressHandler(item.id)}>
-                        <ListItem item={item} />
-                    </TouchableOpacity>
-                }/>
-            <TouchableOpacity style={styles.addButton} onPress={newItemPressHandler}>
-                <Icon name="plus" size={20} color={'#eef5db'}></Icon>
-            </TouchableOpacity>
-        </View>
-    )
 }
 
 const styles = StyleSheet.create({

@@ -26,3 +26,18 @@ export function convertDateToYYYYMMDD(date) {
 
     return `${year}${month}${day}`
 }
+
+export function convertDateToDisplay(dateString) {
+    let year = dateString.substring(0,4)
+    let month = dateString.substring(4,6)
+    let day = dateString.substring(6,8)
+    if (month.charAt(0) == "0") {
+        month = month.substring(1)
+    }
+    if (day.charAt(0) == "0") {
+        day = day.substring(1)
+    }
+
+    return `Due date: ${month}/${day}/${year}`
+
+}
