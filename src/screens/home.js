@@ -4,16 +4,12 @@ StyleSheet,
 Text, 
 TouchableOpacity, 
 View,
-ScrollView,
 FlatList,
-Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
-// import CheckBox from '@react-native-community/checkbox'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {convertCompletedDate, convertDateToMMDDYYYY, convertDateToYYYYMMDD} from '../utils/dateConverter';
+import { convertCompletedDate, convertDateToMMDDYYYY } from '../utils/dateConverter';
 import { useIsFocused } from '@react-navigation/native';
-// import { useBucketItems } from '../utils/bucketItemProvider';
 
 export default function HomeScreen({ navigation }) {
 
