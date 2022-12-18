@@ -1,7 +1,5 @@
-# React Native UVA Bucket List app by Peter Shin pss9fp
 ## App Demo
 https://user-images.githubusercontent.com/61630562/199624126-d6a42b67-294f-495c-b153-acbe7b337b82.mp4
-
 
 
 ### Features beyond requirements
